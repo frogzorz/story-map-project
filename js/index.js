@@ -1,12 +1,12 @@
 import { SlideDeck } from './slidedeck.js';
-import { rateBins, unavailableColor, transitionColors, tractStyle } from './map-styles.js';
+import { rateBins, unavailableColor, transitionColors, tractStyle, tractFillOpacity } from './map-styles.js';
 
 const status = document.querySelector('#load-status');
 const legend = document.querySelector('#map-legend');
 const slides = document.querySelectorAll('.slide');
 const views = {
-  'peak': { field: 'peak_rate', title: '2020–2022: annualized burden' },
-  'recent': { field: 'recent_rate', title: '2023–2025: annualized burden' },
+  'peak': { field: 'peak_rate', title: '2020–2022: peak period' },
+  'recent': { field: 'recent_rate', title: '2023–2025: recent decline' },
   'transitions': { field: 'transition', title: '2020–2022 → 2023–2025' },
 };
 
@@ -27,14 +27,15 @@ function tractDetails(feature) {
   const content = document.createElement('div');
   const lines = [
     `Tract ${p.tract_name} (${p.tract_geoid})`,
-    `2020–2022: ${formatNumber(p.peak_count)} events; rate ${formatNumber(p.peak_rate, 2)}`,
-    `2023–2025: ${formatNumber(p.recent_count)} events; rate ${formatNumber(p.recent_rate, 2)}`,
-    'Rates: annualized events per 10,000 resident population.',
+    `2020–2022: ${formatNumber(p.peak_count)} shootings; rate ${formatNumber(p.peak_rate, 2)}`,
+    `2023–2025: ${formatNumber(p.recent_count)} shootings; rate ${formatNumber(p.recent_rate, 2)}`,
+    'Rates: firearm injury rates per 10,000 resident population per year',
     `Fixed population: ${formatNumber(p.fixed_population)}`,
     p.transition,
   ];
   if (p.low_population_flag) lines.push('Caution: fewer than 100 residents.');
   if (p.low_count_flag) lines.push('Caution: low event count in at least one period.');
+  if (p.rate_exclusion_reason) lines.push(`Rate unavailable: ${p.rate_exclusion_reason}. Counts are retained.`);
   if (p.zero_population_flag || p.missing_denominator_flag) {
     lines.push('Rate unavailable because population is zero or missing. Counts are retained.');
   }
@@ -54,8 +55,8 @@ function updateLegend(slideId) {
   legend.append(heading);
   const description = document.createElement('p');
   description.textContent = view.field === 'transition'
-    ? 'Fixed baseline benchmark; not statistical hotspots.'
-    : 'Annualized events per 10,000 residents. Same bins in both periods.';
+    ? 'Baseline set at 75th percentile of 2015–2019 tract rates.'
+    : 'Firearm injury rates per 10,000 residents per year. Unavailable includes special-use tracts.';
   legend.append(description);
   const entries = view.field === 'transition'
     ? Object.entries(transitionColors).map(([label, color]) => ({ label, color }))
@@ -66,6 +67,7 @@ function updateLegend(slideId) {
     const swatch = document.createElement('span');
     swatch.className = 'legend-swatch';
     swatch.style.backgroundColor = entry.color;
+    swatch.style.opacity = tractFillOpacity;
     swatch.setAttribute('aria-hidden', 'true');
     item.append(swatch, document.createTextNode(entry.label));
     list.append(item);
@@ -126,8 +128,14 @@ async function initialize() {
     populateTable(collection);
     if (!window.L) throw new Error('Leaflet did not load. The table is available; check your internet connection and reload.');
 
-    // a neutral background needs no tile account and keeps this lesson focused on our data
+    // context tiles sit beneath the tract polygons; classification stays in the R exports
     const map = L.map('map', { scrollWheelZoom: false, zoomSnap: 0.25 });
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+      className: 'context-tiles',
+      opacity: 0.8,
+    }).addTo(map);
     map.attributionControl.addAttribution('Philadelphia shooting data · US Census Bureau');
     const slideOptions = {};
     for (const [id, view] of Object.entries(views)) {
@@ -143,7 +151,7 @@ async function initialize() {
       deck.fitMap();
       deck.calcCurrentSlideIndex();
     });
-    status.textContent = `Loaded ${collection.features.length} tracts. Scroll to compare periods; click a tract for details.`;
+    status.textContent = `Loaded ${collection.features.length} tracts. Click a tract to see details.`;
   } catch (error) {
     status.textContent = `Map unavailable: ${error.message} Fix the problem and reload the page.`;
     status.classList.add('error');

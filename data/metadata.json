@@ -17,8 +17,15 @@
   "acs_vintage_and_variable": "2020-2024 ACS 5-year B01003_001 total population estimate and margin of error",
   "rate_definition": "period_count / (fixed total population * years in period) * 10000; area-level place-based burden, not resident incidence",
   "primary_method": "Fixed 2015-2019 upper-quartile tract annualized burden benchmark",
+  "rate_eligibility": {
+    "rule": "Exclude Census special-use tract codes 9800-9899 from all rates and classifications, including constituent block groups; retain geometry and raw counts",
+    "source": "https://www2.census.gov/geo/pdfs/partnerships/psap/G-650.pdf",
+    "excluded_tract_geoids": ["42101980001", "42101980002", "42101980003", "42101980100", "42101980200", "42101980300", "42101980400", "42101980500", "42101980600", "42101980701", "42101980702", "42101980800", "42101980901", "42101980902", "42101980903", "42101980904", "42101980905", "42101980906", "42101989100", "42101989200", "42101989300"],
+    "display": "Unavailable; rate_exclusion_reason distinguishes special-use exclusions from missing/zero population",
+    "revision": "Land-use eligibility revision after map review; all periods and the baseline benchmark recalculated"
+  },
   "baseline_percentile": 0.75,
-  "benchmark_rate_10k": 13.5972031786152,
+  "benchmark_rate_10k": 13.5227897235498,
   "quantile_type": 7,
   "threshold_inclusion": "greater than or equal to unrounded cutoff; zero-event positive-population tracts included",
   "threshold_comparison_periods": "same cutoff for 2020-2022 and 2023-2025; not recalculated within each period",
@@ -34,10 +41,10 @@
     "previously": "Previously elevated: at or above the benchmark only in 2020-2022",
     "newly": "Newly elevated: at or above the benchmark only in 2023-2025",
     "below": "Consistently below: below the benchmark in both periods",
-    "unavailable": "classification cannot be calculated because of denominator or geometry problems"
+    "unavailable": "classification unavailable for special-use tracts or denominator/geometry problems"
   },
   "planned_social_measures": ["ACS economic, housing, education, age, and racial/ethnic composition", "CDC/ATSDR SVI overall and theme-specific measures, with explicit vintage and ranking reference"],
   "known_limitations": ["75th percentile is a descriptive baseline reference, not a clinical or significance threshold", "classification ignores uncertainty around rates and ACS population; low-count and denominator flags retained", "descriptive spatial epidemiology; no causal or predictive interpretation", "event location may differ from victim residence", "a fixed ACS denominator does not capture all population change during 2015-2025", "local statistics depend on geography, spatial weights, sparse counts, and multiple-testing decisions", "below benchmark is not evidence that shooting violence is absent", "source completeness checks cannot detect every reporting delay or omission"],
   "source_filenames": ["data/raw/shootings_2272_2026-05-21.gpkg", "tract_2020_acs2024_population.gpkg", "block_group_2020_acs2024_population.gpkg"],
-  "generation_timestamp": "2026-09-14 05:01:39 UTC"
+  "generation_timestamp": "2026-09-16 20:19:51 UTC"
 }

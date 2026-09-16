@@ -4,7 +4,7 @@ body {
   box-sizing: border-box;
   height: 100vh;
 
-  font-family: 'Source Sans Pro', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 .map-container {
@@ -18,6 +18,10 @@ body {
 .map {
   height: 100%;
   background: #f2f2ef;
+}
+
+.context-tiles {
+  filter: grayscale(1);
 }
 
 .slide-section {

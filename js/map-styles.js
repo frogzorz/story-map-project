@@ -8,6 +8,7 @@ const rateBins = [
   { minimum: 80, label: '80 or more', color: '#FDE725' },
 ];
 const unavailableColor = '#777777';
+const tractFillOpacity = 0.75;
 const transitionColors = {
   'Persistently elevated': '#7A0177',
   'Previously elevated': '#D95F02',
@@ -29,7 +30,7 @@ function tractStyle(properties, view) {
   const fillColor = view === 'transition'
     ? (transitionColors[properties.transition] || unavailableColor)
     : rateColor(properties[view]);
-  return { color: '#FFFFFF', weight: 0.6, fillOpacity: 0.9, fillColor };
+  return { color: '#FFFFFF', weight: 0.6, fillOpacity: tractFillOpacity, fillColor };
 }
 
-export { rateBins, unavailableColor, transitionColors, rateColor, tractStyle };
+export { rateBins, unavailableColor, transitionColors, rateColor, tractStyle, tractFillOpacity };
