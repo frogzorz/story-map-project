@@ -4,13 +4,23 @@
 
 Find examples from previous years and elsewhere on the internet at https://github.com/Weitzman-MUSA-JavaScript/story-map-project-examples
 
+## Guidance
+
+* Keep large data files out of your repository. GitHub will be grumpy if you try to manage files that are larger than ~100MB, or if your repository is more than 1GB overall. Talk to your instructors if you need guidance on where to store and host large data files.
+* Even if your data is small enough to fit in your repository, Simplify your geospatial data appropriately (i.e. right-sized for your use case) to reduce file size and improve performance.
+
 ## Timeline
 
 This project will be our focus for the first four weeks of the course -- in week 5 we will start a new project focused on dashboards.
 
 ### Step 1: Choose a topic and data source(s)
 
-Choose a topic that is fruitfully explained with some combination of narrative and geographic elements. Think about what data you want to tell a story about. Whatever data you use, **be sure to include citations somewhere in your app interface**. You can choose a dataset from any of a number of sources, for example:
+Choose a topic that is fruitfully explained with some combination of narrative and geographic elements. To guide your choice of topic, finish one of the following statements:
+
+* **The story I want to tell is...**, or
+* **The question(s) I want to answer is(/are)...**
+
+Think about what data you want to use to tell your story or explore your question. Whatever data you use, **be sure to include citations somewhere in your app interface**. You can choose a dataset from any of a number of sources, for example:
 
 * Use data you've been working with for another class
 * Create your own dataset (check out [geojson.io](https://geojson.io))
