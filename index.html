@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Philadelphia shooting violence — first data preview</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+  <a class="skip-link" href="#peak">Skip to the narrative</a>
+  <main>
+    <div class="map-container">
+      <div class="map" id="map" aria-label="Philadelphia tract map; equivalent values are in the table below"></div>
+      <aside id="map-legend" class="map-legend" aria-label="Map legend"></aside>
+    </div>
+    <section class="slide-section" aria-label="Shooting burden narrative">
+      <article class="slide" id="peak" tabindex="-1">
+        <p class="eyebrow">Project 1 preview</p>
+        <h1>Philadelphia shooting violence: decline and persistent burden</h1>
+        <p>more narrative TK</p>
+        <nav aria-label="Chapters"><a href="#peak">Peak</a> · <a href="#recent">Recent decline</a> · <a href="#transitions">Transitions</a></nav>
+        <p id="load-status" role="status">Loading export…</p>
+        <noscript><p>tktktk</p></noscript>
+        <h2>2020–2022: peak period</h2>
+        <p>Colors show shooting events per 10,000 resident population per year.</p>
+        <p>Scroll to compare the next period using the same color bins. Gray = rate is unavailable, not that no shootings occurred.</p>
+      </article>
+
+      <article class="slide" id="recent" tabindex="-1">
+        <h2>2023–2025: the recent decline</h2>
+        <p>The map now displays recent-period rates</p>
+        <p>Note: both periods use a fixed 2020–2024 ACS population denominator, which is good for comparability but doesn't capture population change over time</p>
+        <p>The legend ranges are not thresholds of elevated burden</p>
+      </article>
+
+      <article class="slide" id="transitions" tabindex="-1">
+        <h2>Where elevated burden persisted</h2>
+        <p>We classified each tract against one historical benchmark: the 75th percentile of 2015–2019 tract rates, approximately 13.60 events per 10,000 population per year</p>
+        <p id="transition-counts">Transition counts will appear after the data load.</p>
+        <p>“Previously elevated” means below this benchmark in the recent period, not that violence disappeared. With a fixed benchmark and widespread declines, we do not expect many newly elevated tracts</p>
+        <p>tktktk - warn against causal inference, this is purely descriptive</p>
+        <details>
+          <summary>Methods, sources, and aggregate data</summary>
+          <p>2020 Census tracts; pooled three-year counts divided by fixed population × 3, multiplied by 10,000. Officer-involved shootings were excluded. Event location =/= residence. Zero or missing populations produce unavailable rates</p>
+          <p>Sources: <a href="https://opendataphilly.org/datasets/shooting-victims/">Philadelphia shooting-victim data</a> (extract <span id="extraction-date">2026-05-21</span>); US Census Bureau 2020 geography and 2020–2024 ACS five-year total population</p>
+          <p><a href="data/project1_tracts.geojson" download>Download tract GeoJSON</a> · <a href="data/metadata.json" download>Full metadata</a> · <a href="data/city_year.json" download>Citywide annual counts</a></p>
+        </details>
+        <details>
+          <summary>Read tract values without using the map</summary>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable tract data table">
+            <table>
+              <caption>Events per 10,000 resident population per year; officer-involved shootings excluded</caption>
+              <thead><tr><th scope="col">Tract GEOID</th><th scope="col">Peak count</th><th scope="col">Peak rate</th><th scope="col">Recent count</th><th scope="col">Recent rate</th><th scope="col">Transition</th></tr></thead>
+              <tbody id="tract-table-body"></tbody>
+            </table>
+          </div>
+        </details>
+      </article>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/index.js" type="module"></script>
+</body>
+</html>

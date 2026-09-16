@@ -1,0 +1,43 @@
+{
+  "analysis_title": "The changing geography of Philadelphia shooting violence: Project 1",
+  "data_extraction_date": "2026-05-21",
+  "maximum_event_date": "2025-12-31",
+  "outcome_definition": "Shooting-victim events; fatal and nonfatal outcomes retained separately",
+  "officer_involved_exclusion": "Records coded Y for officer_involved are excluded; unknown status is excluded and reported",
+  "analytic_years": {
+    "start": 2015,
+    "end": 2025
+  },
+  "period_definitions": {
+    "baseline": "2015-2019",
+    "peak": "2020-2022",
+    "recent_decline": "2023-2025"
+  },
+  "geographic_vintage": "2020 Census tracts; 2020 Census block groups used only for sensitivity",
+  "acs_vintage_and_variable": "2020-2024 ACS 5-year B01003_001 total population estimate and margin of error",
+  "rate_definition": "period_count / (fixed total population * years in period) * 10000; area-level place-based burden, not resident incidence",
+  "primary_method": "Fixed 2015-2019 upper-quartile tract annualized burden benchmark",
+  "baseline_percentile": 0.75,
+  "benchmark_rate_10k": 13.5972031786152,
+  "quantile_type": 7,
+  "threshold_inclusion": "greater than or equal to unrounded cutoff; zero-event positive-population tracts included",
+  "threshold_comparison_periods": "same cutoff for 2020-2022 and 2023-2025; not recalculated within each period",
+  "supplementary_gistar_implementation": "spdep 1.4.2 localG_perm; conditional greater alternative; focal unit fixed; one-sided high-tail probability derived from the reported folded permutation probability and standardized-deviate sign",
+  "supplementary_spatial_weights": "first-order queen contiguity, binary, focal geography explicitly included",
+  "supplementary_permutation_count": 9999,
+  "supplementary_hotspot_q_threshold": 0.1,
+  "supplementary_threshold_revision": "Exploratory post-map-review relaxation from BH q < 0.05 to q < 0.10; original threshold retained in comparison table",
+  "supplementary_random_seed": 20250904,
+  "supplementary_fdr_method_and_threshold": "Benjamini-Hochberg within period; q < 0.10 plus positive Gi* standardized deviate",
+  "transition_definitions": {
+    "persistent": "Persistently elevated: at or above the fixed benchmark in both periods",
+    "previously": "Previously elevated: at or above the benchmark only in 2020-2022",
+    "newly": "Newly elevated: at or above the benchmark only in 2023-2025",
+    "below": "Consistently below: below the benchmark in both periods",
+    "unavailable": "classification cannot be calculated because of denominator or geometry problems"
+  },
+  "planned_social_measures": ["ACS economic, housing, education, age, and racial/ethnic composition", "CDC/ATSDR SVI overall and theme-specific measures, with explicit vintage and ranking reference"],
+  "known_limitations": ["75th percentile is a descriptive baseline reference, not a clinical or significance threshold", "classification ignores uncertainty around rates and ACS population; low-count and denominator flags retained", "descriptive spatial epidemiology; no causal or predictive interpretation", "event location may differ from victim residence", "a fixed ACS denominator does not capture all population change during 2015-2025", "local statistics depend on geography, spatial weights, sparse counts, and multiple-testing decisions", "below benchmark is not evidence that shooting violence is absent", "source completeness checks cannot detect every reporting delay or omission"],
+  "source_filenames": ["data/raw/shootings_2272_2026-05-21.gpkg", "tract_2020_acs2024_population.gpkg", "block_group_2020_acs2024_population.gpkg"],
+  "generation_timestamp": "2026-09-14 05:01:39 UTC"
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "year": 2015,
+    "total": 1271,
+    "fatal": 233,
+    "nonfatal": 1038,
+    "period": "baseline",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2016,
+    "total": 1319,
+    "fatal": 262,
+    "nonfatal": 1057,
+    "period": "baseline",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2017,
+    "total": 1250,
+    "fatal": 259,
+    "nonfatal": 991,
+    "period": "baseline",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2018,
+    "total": 1438,
+    "fatal": 302,
+    "nonfatal": 1136,
+    "period": "baseline",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2019,
+    "total": 1464,
+    "fatal": 311,
+    "nonfatal": 1153,
+    "period": "baseline",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2020,
+    "total": 2245,
+    "fatal": 449,
+    "nonfatal": 1796,
+    "period": "peak",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2021,
+    "total": 2332,
+    "fatal": 507,
+    "nonfatal": 1825,
+    "period": "peak",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2022,
+    "total": 2255,
+    "fatal": 476,
+    "nonfatal": 1779,
+    "period": "peak",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2023,
+    "total": 1660,
+    "fatal": 376,
+    "nonfatal": 1284,
+    "period": "recent_decline",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2024,
+    "total": 1082,
+    "fatal": 228,
+    "nonfatal": 854,
+    "period": "recent_decline",
+    "completeness_flag": "complete by month/date check"
+  },
+  {
+    "year": 2025,
+    "total": 940,
+    "fatal": 208,
+    "nonfatal": 732,
+    "period": "recent_decline",
+    "completeness_flag": "complete by month/date check"
+  }
+]
