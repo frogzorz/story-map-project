@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
@@ -27,7 +27,7 @@
         <p id="load-status" role="status">Loading export…</p>
         <noscript><p>tktktk</p></noscript>
         <h2>2020–2022: peak period</h2>
-        <p>Colors show shooting events per 10,000 resident population per year.</p>
+        <p>Colors show firearm injury rates per 10,000 resident population per year.</p>
         <p>Scroll to compare the next period using the same color bins. Gray = rate is unavailable, not that no shootings occurred.</p>
       </article>
 
@@ -40,7 +40,7 @@
 
       <article class="slide" id="transitions" tabindex="-1">
         <h2>Where elevated burden persisted</h2>
-        <p>We classified each tract against one historical benchmark: the 75th percentile of 2015–2019 tract rates, approximately 13.60 events per 10,000 population per year</p>
+        <p>We classified each tract against one historical benchmark: the 75th percentile of 2015–2019 tract rates, approximately <span id="benchmark">13.52</span> events per 10,000 population per year</p>
         <p id="transition-counts">Transition counts will appear after the data load.</p>
         <p>“Previously elevated” means below this benchmark in the recent period, not that violence disappeared. With a fixed benchmark and widespread declines, we do not expect many newly elevated tracts</p>
         <p>tktktk - warn against causal inference, this is purely descriptive</p>
