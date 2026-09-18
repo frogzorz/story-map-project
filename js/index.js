@@ -1,4 +1,5 @@
 import { SlideDeck } from './slidedeck.js';
+import { renderCityChart } from './city-chart.js';
 import { rateBins, unavailableColor, transitionColors, tractStyle, tractFillOpacity } from './map-styles.js';
 
 const status = document.querySelector('#load-status');
@@ -68,6 +69,7 @@ function updateLegend(slideId) {
     swatch.className = 'legend-swatch';
     swatch.style.backgroundColor = entry.color;
     swatch.style.opacity = tractFillOpacity;
+    if (view.field !== 'transition' && entry.label === 'Unavailable') swatch.style.borderStyle = 'dashed';
     swatch.setAttribute('aria-hidden', 'true');
     item.append(swatch, document.createTextNode(entry.label));
     list.append(item);
@@ -96,9 +98,10 @@ function populateTable(collection) {
 async function initialize() {
   try {
     // both requests finish before the scroll listener is attached
-    const [collection, metadata] = await Promise.all([
+    const [collection, metadata, city] = await Promise.all([
       loadJSON('data/project1_tracts.geojson'),
       loadJSON('data/metadata.json'),
+      loadJSON('data/city_year.json'),
     ]);
     if (collection.type !== 'FeatureCollection' || !collection.features?.length) {
       throw new Error('The tract export is empty or is not a GeoJSON FeatureCollection.');
@@ -126,32 +129,64 @@ async function initialize() {
       .map((label) => `${label}: ${collection.features.filter((f) => f.properties.transition === label).length}`)
       .join('; ') + '.';
     populateTable(collection);
+    renderCityChart(document.querySelector('#city-chart'), city);
     if (!window.L) throw new Error('Leaflet did not load. The table is available; check your internet connection and reload.');
 
     // context tiles sit beneath the tract polygons; classification stays in the R exports
     const map = L.map('map', { scrollWheelZoom: false, zoomSnap: 0.25 });
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const basemap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
       maxZoom: 19,
       className: 'context-tiles',
       opacity: 0.8,
-    }).addTo(map);
+    });
+    const tileStatus = document.querySelector('#tile-status');
+    basemap.on('tileerror', () => {
+      tileStatus.textContent = 'Some basemap tiles could not load. Tract data and tables remain available.';
+      tileStatus.hidden = false;
+    });
     map.attributionControl.addAttribution('Philadelphia shooting data · US Census Bureau');
-    const slideOptions = {};
-    for (const [id, view] of Object.entries(views)) {
-      slideOptions[id] = {
-        style: (feature) => tractStyle(feature.properties, view.field),
-        onEachFeature: (feature, layer) => layer.bindPopup(tractDetails(feature)),
-      };
+    const dataLayer = L.geoJSON(collection, {
+      style: (feature) => tractStyle(feature.properties, 'peak_rate'),
+      onEachFeature: (feature, layer) => layer.bindPopup(tractDetails(feature)),
+    });
+    const bounds = dataLayer.getBounds();
+    if (!bounds.isValid()) throw new Error('The tract layer has no valid bounds.');
+    const chartPanel = document.querySelector('#chart-panel');
+    const mapPanel = document.querySelector('#map-panel');
+    function fitMap() {
+      map.invalidateSize();
+      map.fitBounds(bounds, { padding: [16, 16], animate: false });
     }
-    updateLegend(slides[0].id);
-    const deck = new SlideDeck(slides, map, collection, slideOptions, updateLegend);
+    function showStage(id) {
+      const isChart = id === 'citywide';
+      chartPanel.hidden = !isChart;
+      mapPanel.hidden = isChart;
+      map.closePopup();
+      if (isChart) return;
+      if (!map.hasLayer(basemap)) basemap.addTo(map);
+      if (id === 'orientation') {
+        map.removeLayer(dataLayer);
+        legend.replaceChildren();
+        const heading = document.createElement('strong');
+        heading.textContent = 'Philadelphia: geographic context';
+        const description = document.createElement('p');
+        // description.textContent = 'Basemap only';
+        legend.append(heading, description);
+      } else {
+        dataLayer.setStyle((feature) => tractStyle(feature.properties, views[id].field));
+        if (!map.hasLayer(dataLayer)) dataLayer.addTo(map);
+        updateLegend(id);
+      }
+      fitMap();
+    }
+    const deck = new SlideDeck(slides, showStage);
     document.addEventListener('scroll', () => deck.calcCurrentSlideIndex(), { passive: true });
     window.addEventListener('resize', () => {
-      deck.fitMap();
+      if (!mapPanel.hidden) fitMap();
       deck.calcCurrentSlideIndex();
     });
-    status.textContent = `Loaded ${collection.features.length} tracts. Click a tract to see details.`;
+    status.textContent = `Loaded ${city.length} annual counts and ${collection.features.length} tracts.`;
   } catch (error) {
     status.textContent = `Map unavailable: ${error.message} Fix the problem and reload the page.`;
     status.classList.add('error');

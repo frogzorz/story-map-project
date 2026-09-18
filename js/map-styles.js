@@ -1,11 +1,12 @@
-// display bins only: these do not determine elevated-burden status
+// reversed rocket, range 0.50–0.95; darkest endpoint adjusted to dark red
+// display colors only: bins and analytic rates are unchanged
 const rateBins = [
-  { minimum: 0, label: '0 to <5', color: '#440154' },
-  { minimum: 5, label: '5 to <10', color: '#414487' },
-  { minimum: 10, label: '10 to <20', color: '#2A788E' },
-  { minimum: 20, label: '20 to <40', color: '#22A884' },
-  { minimum: 40, label: '40 to <80', color: '#7AD151' },
-  { minimum: 80, label: '80 or more', color: '#FDE725' },
+  { minimum: 0, label: '0 to <5', color: '#F8D7C1' },
+  { minimum: 5, label: '5 to <10', color: '#F6B490' },
+  { minimum: 10, label: '10 to <20', color: '#F58F66' },
+  { minimum: 20, label: '20 to <40', color: '#F16646' },
+  { minimum: 40, label: '40 to <80', color: '#E53A40' },
+  { minimum: 80, label: '80 or more', color: '#9E1B32' },
 ];
 const unavailableColor = '#777777';
 const tractFillOpacity = 0.75;
@@ -30,7 +31,14 @@ function tractStyle(properties, view) {
   const fillColor = view === 'transition'
     ? (transitionColors[properties.transition] || unavailableColor)
     : rateColor(properties[view]);
-  return { color: '#FFFFFF', weight: 0.6, fillOpacity: tractFillOpacity, fillColor };
+  const unavailableRate = view !== 'transition' && fillColor === unavailableColor;
+  return {
+    color: unavailableRate ? '#333333' : '#FFFFFF',
+    weight: unavailableRate ? 1 : 0.6,
+    dashArray: unavailableRate ? '3 3' : null,
+    fillOpacity: tractFillOpacity,
+    fillColor,
+  };
 }
 
 export { rateBins, unavailableColor, transitionColors, rateColor, tractStyle, tractFillOpacity };

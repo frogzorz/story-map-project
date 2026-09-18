@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Philadelphia shooting violence — first data preview</title>
+  <title>Firearm violence across space and time in Philadelphia, PA, 2015-2025 — first data preview</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,20 +12,49 @@
   <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
-  <a class="skip-link" href="#peak">Skip to the narrative</a>
+  <a class="skip-link" href="#citywide">Skip to the narrative</a>
   <main>
+    <header class="story-intro">
+      <p class="eyebrow">Project 1 preview</p>
+      <h1>Firearm violence across space and time in Philadelphia, PA, 2015-2025</h1>
+      <p>more narrative TK</p>
+      <!-- writing outline: introduce the citywide change and the question of geographic unevenness -->
+      <nav aria-label="Chapters"><a href="#citywide">Citywide trend</a> · <a href="#orientation">Philadelphia</a> · <a href="#peak">Peak</a> · <a href="#recent">Recent decline</a> · <a href="#transitions">Transitions</a></nav>
+      <p id="load-status" role="status">Loading exports…</p>
+      <noscript><p>Interactive visuals require JavaScript. <a href="data/city_year.json">Download the citywide data</a>.</p></noscript>
+    </header>
     <div class="map-container">
-      <div class="map" id="map" aria-label="Philadelphia tract map; equivalent values are in the table below"></div>
-      <aside id="map-legend" class="map-legend" aria-label="Map legend"></aside>
+      <section id="chart-panel" class="chart-panel" aria-label="Citywide line graph">
+        <h2>Philadelphia firearm injuries, 2015–2025</h2>
+        <div id="city-chart"></div>
+        <p>Annual counts, fatal and nonfatal combined; officer-involved shootings excluded. Source: Philadelphia Police Department via <a href="https://opendataphilly.org/datasets/shooting-victims/">OpenDataPhilly</a>.</p>
+      </section>
+      <div id="map-panel" class="map-panel" hidden>
+        <div class="map" id="map" aria-label="Philadelphia tract map; equivalent values are in the table below"></div>
+        <aside id="map-legend" class="map-legend" aria-label="Map legend"></aside>
+        <p id="tile-status" class="tile-status" role="status" hidden></p>
+      </div>
     </div>
     <section class="slide-section" aria-label="Shooting burden narrative">
+      <article class="slide" id="citywide" tabindex="-1">
+        <h2>The citywide trend</h2>
+        <p class="draft-prompt">Prior to the COVID-19 pandemic, firearm injuries in Philadelphia already represented a grave public health concern, with efforts to curb violence only met by steadily increasing shooting rates. Then, they surged in the wake of the 2020 lockdown, and dropped dramatically after 2022. </p>
+        <details>
+          <summary>View annual injury counts</summary>
+          <div class="table-scroll" tabindex="0" role="region" aria-label="Annual shooting-victim counts">
+            <table>
+              <caption>Citywide injuries, with officer-involved shootings excluded</caption>
+              <thead><tr><th scope="col">Year</th><th scope="col">Total</th><th scope="col">Fatal</th><th scope="col">Nonfatal</th></tr></thead>
+              <tbody id="city-table-body"></tbody>
+            </table>
+          </div>
+        </details>
+      </article>
+      <article class="slide" id="orientation" tabindex="-1">
+        <h2>From citywide counts to tract rates</h2>
+        <p class="draft-prompt">However, the decline was not uniform across all areas. This leads to the question of where the burden of firearm injuries persisted despite overall decreases. In the following maps, we will use firearm injury rates per 10,000 resident population to compare disparities across the city.</p>
+      </article>
       <article class="slide" id="peak" tabindex="-1">
-        <p class="eyebrow">Project 1 preview</p>
-        <h1>Philadelphia shooting violence: decline and persistent burden</h1>
-        <p>more narrative TK</p>
-        <nav aria-label="Chapters"><a href="#peak">Peak</a> · <a href="#recent">Recent decline</a> · <a href="#transitions">Transitions</a></nav>
-        <p id="load-status" role="status">Loading export…</p>
-        <noscript><p>tktktk</p></noscript>
         <h2>2020–2022: peak period</h2>
         <p>Colors show firearm injury rates per 10,000 resident population per year.</p>
         <p>Scroll to compare the next period using the same color bins. Gray = rate is unavailable, not that no shootings occurred.</p>
