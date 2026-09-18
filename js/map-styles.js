@@ -31,11 +31,11 @@ function tractStyle(properties, view) {
   const fillColor = view === 'transition'
     ? (transitionColors[properties.transition] || unavailableColor)
     : rateColor(properties[view]);
-  const unavailableRate = view !== 'transition' && fillColor === unavailableColor;
+  const unavailable = fillColor === unavailableColor;
   return {
-    color: unavailableRate ? '#333333' : '#FFFFFF',
-    weight: unavailableRate ? 1 : 0.6,
-    dashArray: unavailableRate ? '3 3' : null,
+    color: unavailable ? '#333333' : '#FFFFFF',
+    weight: unavailable ? 1 : 0.6,
+    dashArray: unavailable ? '3 3' : null,
     fillOpacity: tractFillOpacity,
     fillColor,
   };

@@ -1,5 +1,6 @@
 import { SlideDeck } from './slidedeck.js';
 import { renderCityChart } from './city-chart.js';
+import { createStageTransition } from './stage-transition.js';
 import { rateBins, unavailableColor, transitionColors, tractStyle, tractFillOpacity } from './map-styles.js';
 
 const status = document.querySelector('#load-status');
@@ -69,7 +70,7 @@ function updateLegend(slideId) {
     swatch.className = 'legend-swatch';
     swatch.style.backgroundColor = entry.color;
     swatch.style.opacity = tractFillOpacity;
-    if (view.field !== 'transition' && entry.label === 'Unavailable') swatch.style.borderStyle = 'dashed';
+    if (entry.label === 'Unavailable') swatch.style.borderStyle = 'dashed';
     swatch.setAttribute('aria-hidden', 'true');
     item.append(swatch, document.createTextNode(entry.label));
     list.append(item);
@@ -146,7 +147,11 @@ async function initialize() {
       tileStatus.hidden = false;
     });
     map.attributionControl.addAttribution('Philadelphia shooting data · US Census Bureau');
+    // animate only this pane; context tiles and map controls remain steady
+    const tractPane = map.createPane('tracts');
+    tractPane.style.zIndex = 450;
     const dataLayer = L.geoJSON(collection, {
+      pane: 'tracts',
       style: (feature) => tractStyle(feature.properties, 'peak_rate'),
       onEachFeature: (feature, layer) => layer.bindPopup(tractDetails(feature)),
     });
@@ -160,6 +165,7 @@ async function initialize() {
     }
     function showStage(id) {
       const isChart = id === 'citywide';
+      const wasMapHidden = mapPanel.hidden;
       chartPanel.hidden = !isChart;
       mapPanel.hidden = isChart;
       map.closePopup();
@@ -178,9 +184,13 @@ async function initialize() {
         if (!map.hasLayer(dataLayer)) dataLayer.addTo(map);
         updateLegend(id);
       }
-      fitMap();
+      if (wasMapHidden) fitMap();
     }
-    const deck = new SlideDeck(slides, showStage);
+    const transitionToStage = createStageTransition(
+      tractPane, showStage,
+      window.matchMedia('(prefers-reduced-motion: reduce)'),
+    );
+    const deck = new SlideDeck(slides, transitionToStage);
     document.addEventListener('scroll', () => deck.calcCurrentSlideIndex(), { passive: true });
     window.addEventListener('resize', () => {
       if (!mapPanel.hidden) fitMap();
