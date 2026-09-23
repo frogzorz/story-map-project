@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Firearm violence across space and time in Philadelphia, PA, 2015-2025 — first data preview</title>
+  <title>Firearm violence across space and time in Philadelphia, PA, 2015-2025</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,12 +15,13 @@
   <a class="skip-link" href="#citywide">Skip to the narrative</a>
   <main>
     <header class="story-intro">
-      <p class="eyebrow">Project 1 preview</p>
       <h1>Firearm violence across space and time in Philadelphia, PA, 2015-2025</h1>
-      <p>more narrative TK</p>
-      <!-- writing outline: introduce the citywide change and the question of geographic unevenness -->
+      <h4>Jamie Song, MPH for MUSA 6110, Fall 2026 | Professor Mjumbe Poe</h4>
+      <p>In the modern era, firearm violence in Philadelphia has been a persistent burden on public health and safety. In the past several years, the city experienced a sharp pandemic-era increase in firearm-related injuries, followed by a decline to historically low rates, a trend that continues through the present day (2026).</p>
+      <p>What remain unclear are how this citywide trend has manifested across different parts of the city, and whether some benefited more from the decline. In this storymap project, we pose the question: how evenly has firearm injury burden declined across the census tracts of Philadelphia?</p>
+      <p>To navigate this site, scroll through the sections below to see how firearm injury rates have changed across space and time in Philadelphia.</p>
       <nav aria-label="Chapters"><a href="#citywide">Citywide trend</a> · <a href="#orientation">Philadelphia</a> · <a href="#peak">Peak</a> · <a href="#recent">Recent decline</a> · <a href="#transitions">Transitions</a></nav>
-      <p id="load-status" role="status">Loading exports…</p>
+      <p id="load-status" role="status"><i>Loading exports…</i></p>
       <noscript><p>Interactive visuals require JavaScript. <a href="data/city_year.json">Download the citywide data</a>.</p></noscript>
     </header>
     <div class="map-container">
@@ -38,12 +39,13 @@
     <section class="slide-section" aria-label="Shooting burden narrative">
       <article class="slide" id="citywide" tabindex="-1">
         <h2>The citywide trend</h2>
-        <p class="draft-prompt">Prior to the COVID-19 pandemic, firearm injuries in Philadelphia already represented a grave public health concern, with efforts to curb violence only met by steadily increasing shooting rates. Then, they surged in the wake of the 2020 lockdown, and dropped dramatically after 2022. </p>
+        <p>Prior to the COVID-19 pandemic, firearm injuries in Philadelphia already represented a grave public health concern, with efforts to curb violence only met by steadily increasing shooting rates. Then, they surged in the wake of the 2020 lockdown, and dropped dramatically after 2022. In 2026, the city is on track to maintain its downward trend, reaching lows not seen since before firearm violence became a widespread public health issue.</p>
+        <p><i>Note: Counts include both fatal and nonfatal injuries.</i></p>
         <details>
-          <summary>View annual injury counts</summary>
+          <summary>View table of annual injury counts</summary>
           <div class="table-scroll" tabindex="0" role="region" aria-label="Annual shooting-victim counts">
             <table>
-              <caption>Citywide injuries, with officer-involved shootings excluded</caption>
+              <caption>Citywide firearm injuries</caption>
               <thead><tr><th scope="col">Year</th><th scope="col">Total</th><th scope="col">Fatal</th><th scope="col">Nonfatal</th></tr></thead>
               <tbody id="city-table-body"></tbody>
             </table>
@@ -52,30 +54,34 @@
       </article>
       <article class="slide" id="orientation" tabindex="-1">
         <h2>From citywide counts to tract rates</h2>
-        <p class="draft-prompt">However, the decline was not uniform across all areas. This leads to the question of where the burden of firearm injuries persisted despite overall decreases. In the following maps, we will use firearm injury rates per 10,000 resident population to compare disparities across the city.</p>
+        <p>However, only looking at citywide trends can hide variation between different parts of the city. Some areas may have benefited more from the decline than others.</p>
+        <p>In the following maps, we will use firearm injury rates per 10,000 resident population, rather than raw counts, to compare disparities across the city. We will use Census tracts to represent these areas; however, please note that tracts are areas developed and used for US Census purposes, and they are not intended to represent neighborhoods.</p>
+        <p>Please also note that, like generalizing citywide trends to smaller parts of the city, tract-level firearm injury burden is not the same as a tract resident's individual risk.</p>
       </article>
       <article class="slide" id="peak" tabindex="-1">
         <h2>2020–2022: peak period</h2>
-        <p>Colors show firearm injury rates per 10,000 resident population per year.</p>
-        <p>Scroll to compare the next period using the same color bins. Gray = rate is unavailable, not that no shootings occurred.</p>
+        <p>This map shows how firearm violence varied across the city during the post-pandemic years. Darker colors show higher annual firearm rates. Injury burden is most concentrated in areas of North Philadelphia, particularly in Kensington and along the Amtrak corridor, as well as West and Southwest Philadelphia.</p>
+        <p><i>Gray tracts indicate that the rate is unavailable, not that no shootings occurred. Certain tracts, such as parks, are excluded because their small populations make their rates unreliable.</i></p>
+        <p><i>Scroll down to compare the next period using the same color bins.</i></p>
       </article>
 
       <article class="slide" id="recent" tabindex="-1">
         <h2>2023–2025: the recent decline</h2>
-        <p>The map now displays recent-period rates</p>
-        <p>Note: both periods use a fixed 2020–2024 ACS population denominator, which is good for comparability but doesn't capture population change over time</p>
-        <p>The legend ranges are not thresholds of elevated burden</p>
+        <p>This map displays rates from more recent years. We can see that the colors across tracts have lightened, which is consistent with the overall decline in firearm violence, and the widespread concentration of injuries across North, West, and Southwest Philadelphia appear to become more sparse. However, many of the previously elevated tracts still show high rates.</p>
+        <p><i>Note: both periods use a fixed 2020–2024 ACS population denominator, which is good for consistent comparisons but does not capture population change over time.</i></p>
       </article>
 
       <article class="slide" id="transitions" tabindex="-1">
         <h2>Where elevated burden persisted</h2>
-        <p>We classified each tract against one historical benchmark: the 75th percentile of 2015–2019 tract rates, approximately <span id="benchmark">13.52</span> events per 10,000 population per year</p>
+        <p>For this map, we wanted to see which tracts had high firearm violence in 2020-2022 and/or in 2023-2025, and we wanted to make the comparison meaningful and based on prior data. So, we compared each tract in each time period against one historical benchmark: the 75th percentile of the pre-pandemic 2015–2019 annual rates, approximately <span id="benchmark">13.52</span> events per 10,000 population per year. Then, we categorized each tract based on whether it fell above or below this benchmark in each time period.</p>
+        <p>"Persistently elevated" tracts are those that remained above the benchmark in both time periods. "Previously elevated" tracts were above the benchmark in the earlier period but are now below it. "Newly elevated" tracts are those that are now above the benchmark but were not in the earlier period. "Consistently below" tracts are those that have remained below the benchmark in both periods. The number of tracts in each category will appear next.</p>
         <p id="transition-counts">Transition counts will appear after the data load.</p>
-        <p>“Previously elevated” means below this benchmark in the recent period, not that violence disappeared. With a fixed benchmark and widespread declines, we do not expect many newly elevated tracts</p>
-        <p>tktktk - warn against causal inference, this is purely descriptive</p>
+        <p>As we can see, many tracts were previously elevated but have dropped below the benchmark, yet many also remained elevated, which is consistent with the visual patterns from the last two maps. What remains to be understood is the underlying differences between these groups, and how they compare in terms of their demographics, risk factors, and community needs.</p>
+        <p><i>Please note that “previously elevated” means below this benchmark in the recent period, not that violence disappeared. Also, with a fixed benchmark across both periods and widespread declines, we do not expect many newly elevated tracts.</i></p>
+        
         <details>
           <summary>Methods, sources, and aggregate data</summary>
-          <p>2020 Census tracts; pooled three-year counts divided by fixed population × 3, multiplied by 10,000. Officer-involved shootings were excluded. Event location =/= residence. Zero or missing populations produce unavailable rates</p>
+          <p>2020 Census tracts; pooled three-year counts divided by fixed 2020 population × 3, multiplied by 10,000. Officer-involved shootings were excluded. Event location =/= residence. Zero or missing populations produce unavailable rates, as well as special-use exclusions.</p> <!-- probably will have to change to ACS 5 yr estimates for each year before public release -->
           <p>Sources: <a href="https://opendataphilly.org/datasets/shooting-victims/">Philadelphia shooting-victim data</a> (extract <span id="extraction-date">2026-05-21</span>); US Census Bureau 2020 geography and 2020–2024 ACS five-year total population</p>
           <p><a href="data/project1_tracts.geojson" download>Download tract GeoJSON</a> · <a href="data/metadata.json" download>Full metadata</a> · <a href="data/city_year.json" download>Citywide annual counts</a></p>
         </details>
