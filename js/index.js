@@ -196,7 +196,7 @@ async function initialize() {
       if (!mapPanel.hidden) fitMap();
       deck.calcCurrentSlideIndex();
     });
-    status.textContent = `Loaded ${city.length} annual counts and ${collection.features.length} tracts.`;
+    status.textContent = `(Loaded ${city.length} annual counts and ${collection.features.length} tracts.)`;
   } catch (error) {
     status.textContent = `Map unavailable: ${error.message} Fix the problem and reload the page.`;
     status.classList.add('error');

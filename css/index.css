@@ -63,6 +63,7 @@ body {
   background: white;
   padding: 0.4rem;
   font-size: 0.8rem;
+  font-style: italic;
 }
 
 .map-container {
