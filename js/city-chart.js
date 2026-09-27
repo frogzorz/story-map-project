@@ -25,9 +25,9 @@ function renderCityChart(container, rows) {
   svg.append(svgElement('desc', { id: 'city-chart-description' },
     'Annual counts, including fatal and nonfatal victims, excluding officer-involved shootings. Exact values are in the annual-count table.'));
   for (const [start, end, label, color] of [
-    [2014.5, 2019.5, 'Baseline', '#E6EFF5'],
-    [2019.5, 2022.5, 'Peak', '#FAEBDD'],
-    [2022.5, 2025.5, 'Recent decline', '#E4F0E9'],
+    [2014.5, 2019.5, 'Baseline', '#DAEDFE'],
+    [2019.5, 2022.5, 'Peak', '#fed0d0'],
+    [2022.5, 2025.5, 'Recent decline', '#b9f2b1'],
   ]) {
     svg.append(svgElement('rect', { x: x(start), y: 55, width: x(end) - x(start), height: 255, fill: color }));
     svg.append(svgElement('text', { 'x': (x(start) + x(end)) / 2, 'y': 42, 'text-anchor': 'middle' }, label));
@@ -36,9 +36,9 @@ function renderCityChart(container, rows) {
     svg.append(svgElement('line', { x1: 65, x2: 665, y1: y(count), y2: y(count), stroke: '#FFFFFF' }));
     svg.append(svgElement('text', { 'x': 57, 'y': y(count) + 5, 'text-anchor': 'end' }, count.toLocaleString('en-US')));
   }
-  svg.append(svgElement('polyline', { 'points': points.map((p) => `${p.x},${p.y}`).join(' '), 'fill': 'none', 'stroke': '#145B80', 'stroke-width': 3 }));
+  svg.append(svgElement('polyline', { 'points': points.map((p) => `${p.x},${p.y}`).join(' '), 'fill': 'none', 'stroke': '#0f4d90', 'stroke-width': 3 }));
   for (const point of points) {
-    const circle = svgElement('circle', { cx: point.x, cy: point.y, r: 4, fill: '#145B80' });
+    const circle = svgElement('circle', { cx: point.x, cy: point.y, r: 4, fill: '#0f4d90' });
     circle.append(svgElement('title', {}, `${point.year}: ${point.total.toLocaleString('en-US')} victims`));
     svg.append(circle);
     svg.append(svgElement('text', { 'x': point.x, 'y': 334, 'text-anchor': 'middle', 'class': 'chart-year' }, point.year));
