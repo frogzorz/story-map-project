@@ -1,5 +1,6 @@
 import { createStoryControls } from './story-controls.js';
 import { formatNumber, tractContent } from './tract-content.js';
+import { popupOptions } from './map-popup.js';
 import { renderCityChart } from './city-chart.js';
 import { createStageTransition } from './stage-transition.js';
 import { rateBins, unavailableColor, transitionColors, tractStyle, tractFillOpacity } from './map-styles.js';
@@ -155,16 +156,33 @@ async function initialize() {
     const dataLayer = L.geoJSON(collection, {
       pane: 'tracts',
       style: (feature) => tractStyle(feature.properties, 'peak_rate'),
-      onEachFeature: (feature, layer) => layer.bindPopup(tractDetails(feature)),
+      onEachFeature: (feature, layer) => layer.bindPopup(() => {
+        const size = map.getSize();
+        Object.assign(layer.getPopup().options, popupOptions(size.x, size.y));
+        return tractDetails(feature);
+      }),
     });
     const bounds = dataLayer.getBounds();
     if (!bounds.isValid()) throw new Error('The tract layer has no valid bounds.');
+    function fitPopup(popup) {
+      const size = map.getSize();
+      Object.assign(popup.options, popupOptions(size.x, size.y));
+      popup.update();
+      const content = popup.getElement().querySelector('.leaflet-popup-content');
+      content.tabIndex = 0;
+      content.setAttribute('role', 'region');
+      content.setAttribute('aria-label', 'Tract details; scroll to read all values and cautions');
+    }
+    map.on('popupopen', (event) => fitPopup(event.popup));
     const chartPanel = document.querySelector('#chart-panel');
     const mapPanel = document.querySelector('#map-panel');
     function fitMap() {
       if (controls.collapsed || mapPanel.hidden) return;
       map.invalidateSize();
       map.fitBounds(bounds, { padding: [16, 16], animate: false });
+      dataLayer.eachLayer((layer) => {
+        if (layer.isPopupOpen()) fitPopup(layer.getPopup());
+      });
     }
     function showStage(id) {
       const isChart = id === 'citywide';

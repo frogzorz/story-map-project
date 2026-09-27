@@ -18,7 +18,7 @@ export function createStoryControls(slides, onStage) {
   };
 
   function updateOffset() {
-    const narrow = window.matchMedia('(max-width: 800px)').matches;
+    const narrow = window.matchMedia('(max-width: 900px)').matches;
     const height = narrow ? shell.getBoundingClientRect().height : 0;
     document.documentElement.style.setProperty('--visual-offset', `${height + 12}px`);
   }
@@ -28,7 +28,7 @@ export function createStoryControls(slides, onStage) {
     if (!element?.closest('.slide')) return;
     const rect = element.getBoundingClientRect();
     const shellRect = shell.getBoundingClientRect();
-    const covered = window.innerWidth <= 800 && shellRect.top <= 0;
+    const covered = window.innerWidth <= 900 && shellRect.top <= 0;
     const top = covered ? shellRect.bottom + 12 : 12;
     if (rect.top < top) window.scrollBy({ top: rect.top - top, behavior: 'instant' });
     else if (rect.bottom > window.innerHeight && rect.height < window.innerHeight - top) {
