@@ -13,27 +13,32 @@
 </head>
 <body>
   <a class="skip-link" href="#citywide">Skip to the narrative</a>
+  <a class="skip-link" href="#tract-data">Skip to tract data</a>
   <main>
     <header class="story-intro">
       <h1>Firearm violence across space and time in Philadelphia, PA, 2015-2025</h1>
-      <h4>Jamie Song, MPH for MUSA 6110, Fall 2026 | Professor Mjumbe Poe</h4>
+      <p class="byline">Jamie Song, MPH for MUSA 6110, Fall 2026 | Professor Mjumbe Poe</p>
       <p>In the modern era, firearm violence in Philadelphia has been a persistent burden on public health and safety. In the past several years, the city experienced a sharp pandemic-era increase in firearm-related injuries, followed by a decline to historically low rates, a trend that continues through the present day (2026).</p>
       <p>What remain unclear are how this citywide trend has manifested across different parts of the city, and whether some benefited more from the decline. In this storymap project, we pose the question: how evenly has firearm injury burden declined across the census tracts of Philadelphia?</p>
       <p>To navigate this site, scroll through the sections below to see how firearm injury rates have changed across space and time in Philadelphia.</p>
-      <nav aria-label="Chapters"><a href="#citywide">Citywide trend</a> · <a href="#orientation">Philadelphia</a> · <a href="#peak">Peak</a> · <a href="#recent">Recent decline</a> · <a href="#transitions">Transitions</a></nav>
+      <nav class="chapter-nav" aria-label="Chapters"><a href="#citywide">Citywide trend</a> <a href="#orientation">Philadelphia</a> <a href="#peak">Peak</a> <a href="#recent">Recent decline</a> <a href="#transitions">Transitions</a></nav>
       <p id="load-status" role="status"><i>Loading exports…</i></p>
+      <p id="stage-status" class="sr-only" role="status" aria-atomic="true"></p>
       <noscript><p>Interactive visuals require JavaScript. <a href="data/city_year.json">Download the citywide data</a>.</p></noscript>
     </header>
     <div class="map-container">
+      <div class="visual-toolbar"><button id="visual-toggle" type="button" aria-expanded="true" aria-controls="visual-content" hidden>Hide visualization</button></div>
+      <div id="visual-content" class="visual-content">
       <section id="chart-panel" class="chart-panel" aria-label="Citywide line graph">
         <h2>Philadelphia firearm injuries, 2015–2025</h2>
         <div id="city-chart"></div>
         <p>Annual counts, fatal and nonfatal combined; officer-involved shootings excluded. Source: Philadelphia Police Department via <a href="https://opendataphilly.org/datasets/shooting-victims/">OpenDataPhilly</a>.</p>
       </section>
       <div id="map-panel" class="map-panel" hidden>
-        <div class="map" id="map" aria-label="Philadelphia tract map; equivalent values are in the table below"></div>
-        <aside id="map-legend" class="map-legend" aria-label="Map legend"></aside>
-        <p id="tile-status" class="tile-status" role="status" hidden></p>
+        <div class="map" id="map" role="region" aria-label="Philadelphia tract map; equivalent values are in the table below"></div>
+        <aside id="map-legend" class="map-legend" tabindex="0" aria-label="Map legend; scroll to read all categories"></aside>
+        <p id="tile-status" class="tile-status" role="status" tabindex="0" hidden></p>
+      </div>
       </div>
     </div>
     <section class="slide-section" aria-label="Shooting burden narrative">
@@ -85,12 +90,12 @@
           <p>Sources: <a href="https://opendataphilly.org/datasets/shooting-victims/">Philadelphia shooting-victim data</a> (extract <span id="extraction-date">2026-05-21</span>); US Census Bureau 2020 geography and 2020–2024 ACS five-year total population</p>
           <p><a href="data/project1_tracts.geojson" download>Download tract GeoJSON</a> · <a href="data/metadata.json" download>Full metadata</a> · <a href="data/city_year.json" download>Citywide annual counts</a></p>
         </details>
-        <details>
+        <details id="tract-table-section">
           <summary>Read tract values without using the map</summary>
-          <div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable tract data table">
+          <div id="tract-data" class="table-scroll" tabindex="0" role="region" aria-label="Tract data: counts, rates, population and cautions">
             <table>
               <caption>Events per 10,000 resident population per year; officer-involved shootings excluded</caption>
-              <thead><tr><th scope="col">Tract GEOID</th><th scope="col">Peak count</th><th scope="col">Peak rate</th><th scope="col">Recent count</th><th scope="col">Recent rate</th><th scope="col">Transition</th></tr></thead>
+              <thead><tr><th scope="col">Tract (GEOID)</th><th scope="col">Fixed ACS 2020–2024 population</th><th scope="col">2020–2022 count</th><th scope="col">2020–2022 rate</th><th scope="col">2023–2025 count</th><th scope="col">2023–2025 rate</th><th scope="col">Transition</th><th scope="col">Notes and cautions</th></tr></thead>
               <tbody id="tract-table-body"></tbody>
             </table>
           </div>

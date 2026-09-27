@@ -7,16 +7,21 @@ class SlideDeck {
     this.calcCurrentSlideIndex();
   }
 
+  select(id, source = 'scroll') {
+    const nextIndex = Array.from(this.slides).findIndex((slide) => slide.id === id);
+    if (nextIndex < 0 || nextIndex === this.currentSlideIndex) return false;
+    this.currentSlideIndex = nextIndex;
+    this.onSlideChange(id, source);
+    return true;
+  }
+
   calcCurrentSlideIndex() {
     const threshold = window.innerHeight * 0.65;
     let nextIndex = 0;
     for (let i = 0; i < this.slides.length; i++) {
       if (this.slides[i].getBoundingClientRect().top <= threshold) nextIndex = i;
     }
-    if (nextIndex !== this.currentSlideIndex) {
-      this.currentSlideIndex = nextIndex;
-      this.onSlideChange(this.slides[nextIndex].id);
-    }
+    this.select(this.slides[nextIndex].id);
   }
 }
 

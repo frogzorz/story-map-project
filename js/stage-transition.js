@@ -5,11 +5,11 @@ export function createStageTransition(element, update, motion) {
   let initialized = false;
   let latestId;
 
-  async function show(id) {
+  async function show(id, immediate = false) {
     latestId = id;
     const current = ++revision;
     animation?.cancel();
-    if (!initialized || motion.matches || !element.animate) {
+    if (immediate || !initialized || motion.matches || !element.animate) {
       initialized = true;
       update(id);
       return;

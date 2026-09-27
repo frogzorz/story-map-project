@@ -1,4 +1,5 @@
-import { SlideDeck } from './slidedeck.js';
+import { createStoryControls } from './story-controls.js';
+import { formatNumber, tractContent } from './tract-content.js';
 import { renderCityChart } from './city-chart.js';
 import { createStageTransition } from './stage-transition.js';
 import { rateBins, unavailableColor, transitionColors, tractStyle, tractFillOpacity } from './map-styles.js';
@@ -6,6 +7,14 @@ import { rateBins, unavailableColor, transitionColors, tractStyle, tractFillOpac
 const status = document.querySelector('#load-status');
 const legend = document.querySelector('#map-legend');
 const slides = document.querySelectorAll('.slide');
+let mapStage;
+const controls = createStoryControls(slides, (id, immediate) => {
+  if (mapStage) mapStage(id, immediate);
+  else {
+    document.querySelector('#chart-panel').hidden = id !== 'citywide';
+    document.querySelector('#map-panel').hidden = id === 'citywide';
+  }
+});
 const views = {
   'peak': { field: 'peak_rate', title: '2020–2022: peak period' },
   'recent': { field: 'recent_rate', title: '2023–2025: recent decline' },
@@ -18,29 +27,18 @@ async function loadJSON(path) {
   return response.json();
 }
 
-function formatNumber(value, digits = 0) {
-  return Number.isFinite(value)
-    ? value.toLocaleString('en-US', { maximumFractionDigits: digits })
-    : 'Unavailable';
-}
-
 function tractDetails(feature) {
-  const p = feature.properties;
+  const p = tractContent(feature.properties);
   const content = document.createElement('div');
   const lines = [
-    `Tract ${p.tract_name} (${p.tract_geoid})`,
-    `2020–2022: ${formatNumber(p.peak_count)} shootings; rate ${formatNumber(p.peak_rate, 2)}`,
-    `2023–2025: ${formatNumber(p.recent_count)} shootings; rate ${formatNumber(p.recent_rate, 2)}`,
+    p.name,
+    `2020–2022: ${p.peakCount} shooting-victim occurrences; rate ${p.peakRate}`,
+    `2023–2025: ${p.recentCount} shooting-victim occurrences; rate ${p.recentRate}`,
     'Rates: firearm injury rates per 10,000 resident population per year',
-    `Fixed population: ${formatNumber(p.fixed_population)}`,
+    `Fixed ACS 2020–2024 population: ${p.population}`,
     p.transition,
+    p.notes,
   ];
-  if (p.low_population_flag) lines.push('Caution: fewer than 100 residents.');
-  if (p.low_count_flag) lines.push('Caution: low event count in at least one period.');
-  if (p.rate_exclusion_reason) lines.push(`Rate unavailable: ${p.rate_exclusion_reason}. Counts are retained.`);
-  if (p.zero_population_flag || p.missing_denominator_flag) {
-    lines.push('Rate unavailable because population is zero or missing. Counts are retained.');
-  }
   for (const line of lines) {
     const paragraph = document.createElement('p');
     paragraph.textContent = line;
@@ -82,10 +80,13 @@ function populateTable(collection) {
   const body = document.querySelector('#tract-table-body');
   const fragment = document.createDocumentFragment();
   for (const feature of collection.features) {
-    const p = feature.properties;
+    const p = tractContent(feature.properties);
     const row = document.createElement('tr');
-    const values = [p.tract_geoid, formatNumber(p.peak_count), formatNumber(p.peak_rate, 2),
-      formatNumber(p.recent_count), formatNumber(p.recent_rate, 2), p.transition];
+    const heading = document.createElement('th');
+    heading.scope = 'row';
+    heading.textContent = p.name;
+    row.append(heading);
+    const values = [p.population, p.peakCount, p.peakRate, p.recentCount, p.recentRate, p.transition, p.notes];
     for (const value of values) {
       const cell = document.createElement('td');
       cell.textContent = value;
@@ -93,12 +94,12 @@ function populateTable(collection) {
     }
     fragment.append(row);
   }
-  body.append(fragment);
+  body.replaceChildren(fragment);
 }
 
 async function initialize() {
   try {
-    // both requests finish before the scroll listener is attached
+    // presentation uses only validated R exports
     const [collection, metadata, city] = await Promise.all([
       loadJSON('data/project1_tracts.geojson'),
       loadJSON('data/metadata.json'),
@@ -131,7 +132,7 @@ async function initialize() {
       .join('; ') + '.';
     populateTable(collection);
     renderCityChart(document.querySelector('#city-chart'), city);
-    if (!window.L) throw new Error('Leaflet did not load. The table is available; check your internet connection and reload.');
+    if (!window.L) throw new Error('The map library did not load. Annual and tract tables are available; try reloading.');
 
     // context tiles sit beneath the tract polygons; classification stays in the R exports
     const map = L.map('map', { scrollWheelZoom: false, zoomSnap: 0.25 });
@@ -143,6 +144,7 @@ async function initialize() {
     });
     const tileStatus = document.querySelector('#tile-status');
     basemap.on('tileerror', () => {
+      if (!tileStatus.hidden) return;
       tileStatus.textContent = 'Some basemap tiles could not load. Tract data and tables remain available.';
       tileStatus.hidden = false;
     });
@@ -160,17 +162,21 @@ async function initialize() {
     const chartPanel = document.querySelector('#chart-panel');
     const mapPanel = document.querySelector('#map-panel');
     function fitMap() {
+      if (controls.collapsed || mapPanel.hidden) return;
       map.invalidateSize();
       map.fitBounds(bounds, { padding: [16, 16], animate: false });
     }
     function showStage(id) {
       const isChart = id === 'citywide';
       const wasMapHidden = mapPanel.hidden;
+      const focused = document.activeElement;
+      if ((isChart && mapPanel.contains(focused)) || (!isChart && chartPanel.contains(focused))
+        || focused?.closest('.leaflet-popup')) controls.focusHeading(id);
       chartPanel.hidden = !isChart;
       mapPanel.hidden = isChart;
       map.closePopup();
       if (isChart) return;
-      if (!map.hasLayer(basemap)) basemap.addTo(map);
+      if (!controls.collapsed && !map.hasLayer(basemap)) basemap.addTo(map);
       if (id === 'orientation') {
         map.removeLayer(dataLayer);
         legend.replaceChildren();
@@ -190,15 +196,21 @@ async function initialize() {
       tractPane, showStage,
       window.matchMedia('(prefers-reduced-motion: reduce)'),
     );
-    const deck = new SlideDeck(slides, transitionToStage);
-    document.addEventListener('scroll', () => deck.calcCurrentSlideIndex(), { passive: true });
+    mapStage = (id, immediate) => transitionToStage(id, immediate || controls.collapsed);
+    controls.onReveal = () => {
+      mapStage(controls.currentId, true);
+      fitMap();
+    };
+    mapStage(controls.currentId, true);
+    fitMap();
     window.addEventListener('resize', () => {
       if (!mapPanel.hidden) fitMap();
-      deck.calcCurrentSlideIndex();
     });
     status.textContent = `(Loaded ${city.length} annual counts and ${collection.features.length} tracts.)`;
   } catch (error) {
-    status.textContent = `Map unavailable: ${error.message} Fix the problem and reload the page.`;
+    status.textContent = `Some visuals are unavailable: ${error.message} Narrative and download links remain available.`;
+    document.querySelector('#tile-status').hidden = false;
+    document.querySelector('#tile-status').textContent = 'Map unavailable. Use the narrative, available tables and download links.';
     status.classList.add('error');
     console.error(error);
   }
