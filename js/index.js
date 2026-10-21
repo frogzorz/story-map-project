@@ -2,6 +2,7 @@ import { createStoryControls } from './story-controls.js';
 import { formatNumber, tractContent } from './tract-content.js';
 import { popupOptions } from './map-popup.js';
 import { renderCityChart } from './city-chart.js';
+import { validateCity, validateTracts } from './data-validation.js';
 import { createStageTransition } from './stage-transition.js';
 import { rateBins, unavailableColor, transitionColors, tractStyle, tractFillOpacity } from './map-styles.js';
 
@@ -98,32 +99,14 @@ function populateTable(collection) {
   body.replaceChildren(fragment);
 }
 
-async function initialize() {
+async function initializeMap() {
   try {
     // presentation uses only validated R exports
-    const [collection, metadata, city] = await Promise.all([
+    const [collection, metadata] = await Promise.all([
       loadJSON('data/project1_tracts.geojson'),
       loadJSON('data/metadata.json'),
-      loadJSON('data/city_year.json'),
     ]);
-    if (collection.type !== 'FeatureCollection' || !collection.features?.length) {
-      throw new Error('The tract export is empty or is not a GeoJSON FeatureCollection.');
-    }
-    const required = ['tract_geoid', 'tract_name', 'peak_count', 'peak_rate',
-      'recent_count', 'recent_rate', 'transition', 'fixed_population'];
-    const seen = new Set();
-    for (const feature of collection.features) {
-      const p = feature.properties;
-      if (!['Polygon', 'MultiPolygon'].includes(feature.geometry?.type)
-        || !p || required.some((key) => !Object.hasOwn(p, key))
-        || seen.has(p.tract_geoid) || !Object.hasOwn(transitionColors, p.transition)) {
-        throw new Error('The tract export has invalid geometry types, fields, IDs, or categories.');
-      }
-      seen.add(p.tract_geoid);
-    }
-    if (!Number.isFinite(metadata.benchmark_rate_10k) || metadata.baseline_percentile !== 0.75) {
-      throw new Error('The metadata does not describe the expected baseline benchmark.');
-    }
+    validateTracts(collection, metadata);
     // narrative placeholders are optional; removing one must not prevent the map loading
     const benchmark = document.querySelector('#benchmark');
     if (benchmark) benchmark.textContent = formatNumber(metadata.benchmark_rate_10k, 2);
@@ -132,8 +115,7 @@ async function initialize() {
       .map((label) => `${label}: ${collection.features.filter((f) => f.properties.transition === label).length}`)
       .join('; ') + '.';
     populateTable(collection);
-    renderCityChart(document.querySelector('#city-chart'), city);
-    if (!window.L) throw new Error('The map library did not load. Annual and tract tables are available; try reloading.');
+    if (!window.L) throw new Error('The map library did not load. The tract table is available; try reloading.');
 
     // context tiles sit beneath the tract polygons; classification stays in the R exports
     const map = L.map('map', { scrollWheelZoom: false, zoomSnap: 0.25 });
@@ -224,14 +206,36 @@ async function initialize() {
     window.addEventListener('resize', () => {
       if (!mapPanel.hidden) fitMap();
     });
-    status.textContent = `(Loaded ${city.length} annual counts and ${collection.features.length} tracts.)`;
+    return `${collection.features.length} tracts`;
   } catch (error) {
-    status.textContent = `Some visuals are unavailable: ${error.message} Narrative and download links remain available.`;
     document.querySelector('#tile-status').hidden = false;
     document.querySelector('#tile-status').textContent = 'Map unavailable. Use the narrative, available tables and download links.';
-    status.classList.add('error');
-    console.error(error);
+    throw error;
   }
+}
+
+async function initializeCity() {
+  try {
+    const city = validateCity(await loadJSON('data/city_year.json'));
+    renderCityChart(document.querySelector('#city-chart'), city);
+    return `${city.length} annual counts`;
+  } catch (error) {
+    const message = document.createElement('p');
+    message.className = 'error';
+    message.textContent = 'Citywide chart and annual table unavailable. Try reloading or use the download link.';
+    document.querySelector('#city-chart').replaceChildren(message);
+    throw error;
+  }
+}
+
+async function initialize() {
+  const results = await Promise.allSettled([initializeCity(), initializeMap()]);
+  const loaded = results.filter((result) => result.status === 'fulfilled').map((result) => result.value);
+  const failed = results.filter((result) => result.status === 'rejected').map((result) => result.reason.message);
+  status.classList.toggle('error', failed.length > 0);
+  status.textContent = failed.length
+    ? `Some visuals are unavailable: ${failed.join(' ')} ${loaded.length ? `Loaded ${loaded.join(' and ')}.` : ''} Narrative and download links remain available.`
+    : `(Loaded ${loaded.join(' and ')}.)`;
 }
 
 initialize();
