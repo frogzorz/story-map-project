@@ -17,6 +17,8 @@ a {
   text-decoration: underline;
 }
 
+.leaflet-control-attribution a { text-decoration: underline; }
+
 .chapter-nav {
   display: flex;
   flex-wrap: wrap;
@@ -31,18 +33,20 @@ summary {
   padding: 0.5rem 1rem;
   border-radius: 4px;
 }
+
 .chapter-nav a {
   background-color: #0f4d90;
-  color: #ffffff;
+  color: #fff;
   text-decoration: none;
   font-weight: 700;
   border: 2px solid #0f4d90;
 }
+
 .chapter-nav a:hover,
 .chapter-nav a:focus-visible {
   background-color: #f3c613;
   border-color: #f3c613;
-  color: #000000;
+  color: #000;
 }
 
 button { font: inherit; }
@@ -51,6 +55,8 @@ button { font: inherit; }
   background-color: #25cef7;
   border-color: #25cef7;
   color: #0f4d90;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .visual-toolbar {
@@ -91,20 +97,21 @@ button { font: inherit; }
   margin: 2rem auto;
   padding: 2rem 3rem;
   line-height: 1.55;
-  background-color: #ffffff;
+  background-color: #fff;
   color: #0f4d90;
   
   border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(15, 77, 144, 0.2);
+  box-shadow: 0 4px 12px rgb(15 77 144 / 20%);
 }
+
 .story-intro > * {
   max-width: none;
 }
 
 .story-intro h1 {
   background-color: #0f4d90;
-  color: #ffffff;
-  margin: -2rem -3rem 2rem -3rem;
+  color: #fff;
+  margin: -2rem -3rem 2rem;
   padding: 2rem 3rem;
   border-bottom: 6px solid #f3c613;
   border-top-left-radius: 4px;
@@ -132,6 +139,7 @@ button { font: inherit; }
 
 .chart-panel h2 {
   font-size: 1.2rem;
+  color: #0f4d90;
 }
 
 .chart-panel p {
@@ -182,8 +190,6 @@ button { font: inherit; }
   filter: grayscale(1);
 }
 
-.leaflet-control-attribution a { text-decoration: underline; }
-
 .leaflet-popup-content { margin: 12px 20px; }
 
 .slide-section {
@@ -202,7 +208,7 @@ button { font: inherit; }
   margin-left: auto;
   margin-right: 2rem;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
   border: 1px solid #dcdcdc;
   border-top: 6px solid #0f4d90;
   border-radius: 4px;
@@ -451,4 +457,11 @@ td {
   .map-legend { flex-basis: 4rem; }
 }
 
-.chart-panel h2 { color: #0f4d90; }
+@media (width <= 600px) {
+  .story-intro { padding: 2rem 1.25rem; }
+
+  .story-intro h1 {
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+  }
+}
