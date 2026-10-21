@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/index.css?v=20261021-map-reset">
 </head>
 <body>
   <a class="skip-link" href="#citywide">Skip to the narrative</a>
@@ -27,7 +27,12 @@
       <noscript><p>Interactive visuals require JavaScript. <a href="data/city_year.json">Download the citywide data</a>.</p></noscript>
     </header>
     <div class="map-container">
-      <div class="visual-toolbar"><button id="visual-toggle" type="button" aria-expanded="true" aria-controls="visual-content" hidden>Hide visualization</button></div>
+      <div class="visual-toolbar">
+        <button id="visual-toggle" type="button" aria-expanded="true" aria-controls="visual-content" hidden>Hide visualization</button>
+        <div class="map-reset-controls">
+          <button id="map-reset" type="button" aria-controls="map" disabled hidden>Reset map extent</button>
+        </div>
+      </div>
       <div id="visual-content" class="visual-content">
       <section id="chart-panel" class="chart-panel" aria-label="Citywide line graph">
         <h2>Philadelphia firearm injuries, 2015–2025</h2>
@@ -83,7 +88,28 @@
         <p id="transition-counts">Transition counts will appear after the data load.</p>
         <p>As we can see, many tracts were previously elevated but have dropped below the benchmark, yet many also remained elevated, which is consistent with the visual patterns from the last two maps. What remains to be understood is the underlying differences between these groups, and how they compare in terms of their demographics, risk factors, and community needs.</p>
         <p><i>Please note that “previously elevated” means below this benchmark in the recent period, not that violence disappeared. Also, with a fixed benchmark across both periods and widespread declines, we do not expect many newly elevated tracts.</i></p>
-        
+
+        <p id="address-purpose">Search a Philadelphia address to find its Census tract and compare its injury rates and elevated-burden category.</p>
+        <form id="address-form" class="address-form" aria-describedby="address-purpose address-help address-privacy">
+          <fieldset id="address-controls" disabled>
+            <legend>Find a census tract by street address</legend>
+            <label for="address-street">Philadelphia street address
+              <input id="address-street" type="text" placeholder="e.g., 1400 John F Kennedy Blvd" maxlength="200" autocomplete="off" required>
+            </label>
+            <label for="address-zip">ZIP code (optional)
+              <input id="address-zip" type="text" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" autocomplete="off">
+            </label>
+            <div class="address-buttons">
+              <button id="address-submit" type="submit">Find tract</button>
+              <button id="address-clear" type="button">Clear</button>
+            </div>
+          </fieldset>
+          <p id="address-help" class="address-note">The tract is highlighted on the map and its values open in a popup. Matches are approximate, so confirm the returned address.</p>
+          <p id="address-privacy" class="address-note">Your address is sent to the <a href="https://geocoding.geo.census.gov/geocoder/Geocoding_Services_API.html">US Census Bureau geocoder</a> for lookup and is not stored by this site.</p>
+          <p id="address-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          <ul id="address-results" aria-label="Matched addresses"></ul>
+        </form>
+
         <details>
           <summary>Methods, sources, and aggregate data</summary>
           <p>2020 Census tracts; pooled three-year counts divided by fixed 2020 population × 3, multiplied by 10,000. Officer-involved shootings were excluded. Event location =/= residence. Zero or missing populations produce unavailable rates, as well as special-use exclusions.</p> <!-- probably will have to change to ACS 5 yr estimates for each year before public release -->
@@ -105,6 +131,6 @@
   </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="js/index.js" type="module"></script>
+  <script src="js/index.js?v=20261021-map-reset" type="module"></script>
 </body>
 </html>

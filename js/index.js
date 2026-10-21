@@ -4,6 +4,7 @@ import { popupOptions } from './map-popup.js';
 import { renderCityChart } from './city-chart.js';
 import { validateCity, validateTracts } from './data-validation.js';
 import { createStageTransition } from './stage-transition.js';
+import { initializeAddressSearch } from './address-search.js';
 import { rateBins, unavailableColor, transitionColors, tractStyle, tractFillOpacity } from './map-styles.js';
 
 const status = document.querySelector('#load-status');
@@ -99,7 +100,15 @@ function populateTable(collection) {
   body.replaceChildren(fragment);
 }
 
+// plain-language summary for the address status; mirrors the popup and table wording
+function tractSummary(properties) {
+  const p = tractContent(properties);
+  return `${p.name}. 2020–2022 rate: ${p.peakRate}; 2023–2025 rate: ${p.recentRate} per 10,000 residents per year. Category: ${p.transition}.`;
+}
+
 async function initializeMap() {
+  // set once the map exists; address search still reports tract values without it
+  let mapSelection = null;
   try {
     // presentation uses only validated R exports
     const [collection, metadata] = await Promise.all([
@@ -115,6 +124,14 @@ async function initializeMap() {
       .map((label) => `${label}: ${collection.features.filter((f) => f.properties.transition === label).length}`)
       .join('; ') + '.';
     populateTable(collection);
+    const byGeoid = new Map(collection.features.map((f) => [f.properties.tract_geoid, f]));
+    initializeAddressSearch(collection, (geoid) => {
+      const feature = byGeoid.get(geoid);
+      if (!feature) return null;
+      const summary = tractSummary(feature.properties);
+      const shown = mapSelection?.select(geoid);
+      return shown ? summary : `${summary} Show the visualization to see the tract highlighted on the map.`;
+    }, () => mapSelection?.clear());
     if (!window.L) throw new Error('The map library did not load. The tract table is available; try reloading.');
 
     // context tiles sit beneath the tract polygons; classification stays in the R exports
@@ -135,14 +152,32 @@ async function initializeMap() {
     // animate only this pane; context tiles and map controls remain steady
     const tractPane = map.createPane('tracts');
     tractPane.style.zIndex = 450;
+    // the highlighted tract follows its open popup, whether opened by a click or an address search
+    let currentField = 'peak_rate';
+    let selectedGeoid = null;
+    let pendingGeoid = null;
+    const styleTract = (feature) => tractStyle(feature.properties, currentField,
+      feature.properties.tract_geoid === selectedGeoid);
     const dataLayer = L.geoJSON(collection, {
       pane: 'tracts',
-      style: (feature) => tractStyle(feature.properties, 'peak_rate'),
-      onEachFeature: (feature, layer) => layer.bindPopup(() => {
-        const size = map.getSize();
-        Object.assign(layer.getPopup().options, popupOptions(size.x, size.y));
-        return tractDetails(feature);
-      }),
+      style: styleTract,
+      onEachFeature: (feature, layer) => {
+        layer.bindPopup(() => {
+          const size = map.getSize();
+          Object.assign(layer.getPopup().options, popupOptions(size.x, size.y));
+          return tractDetails(feature);
+        });
+        layer.on('popupopen', () => {
+          selectedGeoid = feature.properties.tract_geoid;
+          layer.setStyle(styleTract(feature));
+          layer.bringToFront();
+        });
+        layer.on('popupclose', () => {
+          if (selectedGeoid !== feature.properties.tract_geoid) return;
+          selectedGeoid = null;
+          layer.setStyle(styleTract(feature));
+        });
+      },
     });
     const bounds = dataLayer.getBounds();
     if (!bounds.isValid()) throw new Error('The tract layer has no valid bounds.');
@@ -186,7 +221,8 @@ async function initializeMap() {
         // description.textContent = 'Basemap only';
         legend.append(heading, description);
       } else {
-        dataLayer.setStyle((feature) => tractStyle(feature.properties, views[id].field));
+        currentField = views[id].field;
+        dataLayer.setStyle(styleTract);
         if (!map.hasLayer(dataLayer)) dataLayer.addTo(map);
         updateLegend(id);
       }
@@ -197,14 +233,51 @@ async function initializeMap() {
       window.matchMedia('(prefers-reduced-motion: reduce)'),
     );
     mapStage = (id, immediate) => transitionToStage(id, immediate || controls.collapsed);
+    const tractLayer = (geoid) => dataLayer.getLayers().find((layer) => layer.feature.properties.tract_geoid === geoid);
+    // zoom to the tract and open its popup exactly as a click would
+    function showTract(geoid) {
+      const layer = tractLayer(geoid);
+      if (!layer || controls.collapsed || mapPanel.hidden || !map.hasLayer(dataLayer)) return false;
+      map.fitBounds(layer.getBounds(), { padding: [24, 24], maxZoom: 15, animate: false });
+      layer.openPopup();
+      return true;
+    }
+    mapSelection = {
+      select(geoid) {
+        pendingGeoid = geoid;
+        if (!showTract(geoid)) return false;
+        pendingGeoid = null;
+        return true;
+      },
+      clear() {
+        pendingGeoid = null;
+        map.closePopup();
+        fitMap();
+      },
+    };
+    const resetMap = document.querySelector('#map-reset');
+    resetMap.addEventListener('click', () => {
+      mapSelection.clear();
+      document.querySelector('#stage-status').textContent = 'Map reset to Philadelphia’s full extent.';
+    });
+    resetMap.disabled = false;
+    resetMap.hidden = false;
     controls.onReveal = () => {
       mapStage(controls.currentId, true);
       fitMap();
+      if (pendingGeoid && showTract(pendingGeoid)) pendingGeoid = null;
     };
     mapStage(controls.currentId, true);
     fitMap();
     window.addEventListener('resize', () => {
-      if (!mapPanel.hidden) fitMap();
+      if (mapPanel.hidden) return;
+      // keep a searched or clicked tract in view (e.g. when a phone keyboard closes)
+      const selected = selectedGeoid && tractLayer(selectedGeoid);
+      if (selected && !controls.collapsed) {
+        map.invalidateSize();
+        map.fitBounds(selected.getBounds(), { padding: [24, 24], maxZoom: 15, animate: false });
+        if (selected.isPopupOpen()) fitPopup(selected.getPopup());
+      } else fitMap();
     });
     return `${collection.features.length} tracts`;
   } catch (error) {

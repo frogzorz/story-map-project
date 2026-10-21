@@ -27,14 +27,15 @@ function rateColor(value) {
   return color;
 }
 
-function tractStyle(properties, view) {
+// a selected tract (clicked or found by address) gets a heavy dark outline; fill is unchanged
+function tractStyle(properties, view, selected = false) {
   const fillColor = view === 'transition'
     ? (transitionColors[properties.transition] || unavailableColor)
     : rateColor(properties[view]);
   const unavailable = fillColor === unavailableColor;
   return {
-    color: unavailable ? '#333333' : '#FFFFFF',
-    weight: unavailable ? 1 : 0.6,
+    color: selected ? '#000000' : (unavailable ? '#333333' : '#FFFFFF'),
+    weight: selected ? 4 : (unavailable ? 1 : 0.6),
     dashArray: unavailable ? '3 3' : null,
     fillOpacity: tractFillOpacity,
     fillColor,

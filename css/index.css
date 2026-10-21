@@ -60,10 +60,20 @@ button { font: inherit; }
 }
 
 .visual-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   background: white;
   padding: 0.25rem;
   flex: 0 0 auto;
 }
+
+.map-reset-controls { flex-basis: 100%; }
+
+.visual-collapsed .map-reset-controls,
+.map-container[data-stage="citywide"] .map-reset-controls,
+.visual-collapsed #map-reset,
+.map-container[data-stage="citywide"] #map-reset { display: none; }
 
 .visual-content {
   flex: 1;
@@ -354,6 +364,117 @@ td {
 }
 
 #tract-data table { min-width: 55rem; }
+
+.address-form {
+  margin: 1.25rem 0;
+}
+
+.address-form fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0.75rem 1rem 1rem;
+  border: 1px solid #767676;
+  border-radius: 4px;
+}
+
+.address-form legend {
+  padding: 0 0.25rem;
+  font-weight: 600;
+  color: #0f4d90;
+}
+
+.address-form label {
+  display: block;
+  margin-top: 0.5rem;
+}
+
+.address-form input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 0.25rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.address-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.address-buttons button {
+  border: 2px solid #0f4d90;
+  background-color: #fff;
+  color: #0f4d90;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.address-buttons button:hover {
+  background-color: #f3c613;
+  border-color: #f3c613;
+  color: #000;
+}
+
+.address-buttons button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.address-note {
+  font-size: 0.85rem;
+  color: #444;
+}
+
+#address-zip { max-width: 9rem; }
+
+#address-submit {
+  background-color: #0f4d90;
+  color: #fff;
+}
+
+#address-status {
+  padding: 0.5rem 0.75rem;
+  border-left: 4px solid #0f4d90;
+  background-color: #f1f5fa;
+}
+
+/* the live region stays rendered so screen readers announce later updates */
+#address-status:empty {
+  padding: 0;
+  border: 0;
+}
+
+#address-results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#address-results:empty { display: none; }
+#address-results li + li { margin-top: 0.5rem; }
+
+#address-results button {
+  width: 100%;
+  border: 2px solid #0f4d90;
+  background-color: #fff;
+  color: #0f4d90;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+#address-submit:hover,
+#address-results button:hover {
+  background-color: #f3c613;
+  border-color: #f3c613;
+  color: #000;
+}
 
 @media (prefers-reduced-motion: reduce) {
   .slide-nav-button { transition: none; }
